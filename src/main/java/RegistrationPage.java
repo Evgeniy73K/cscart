@@ -1,13 +1,13 @@
+import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
+import static com.codeborne.selenide.Selenide.$;
+
 public class RegistrationPage {
-    WebDriver driver;
 
-    public RegistrationPage(WebDriver driver) {
-        this.driver = driver;
-    }
-
+    
     private By firstNameField = By.xpath("//input[@id=\"elm_6\"]");
     private By surNameField = By.xpath("//input[@id=\"elm_7\"]");
     private By phoneField = By.xpath("//input[@id=\"elm_9\"]");
@@ -21,64 +21,70 @@ public class RegistrationPage {
     private By errorPhone = By.xpath("//span[@id=\"elm_9_error_message\"]");
     private By alertError = By.xpath("//div[@class=\"cm-notification-content notification-content alert-error\"]");
 
+    public RegistrationPage open() {
+        Selenide.open("/");
+        return this;
+    }
+
     public RegistrationPage typeName(String name) {
-        driver.findElement(firstNameField).sendKeys(name);
+        $(firstNameField).setValue(name);
         return this;
     }
 
     public  RegistrationPage typeSurname(String surname) {
-        driver.findElement(surNameField).sendKeys(surname);
+        $(surNameField).setValue(surname);
         return this;
     }
 
     public RegistrationPage typePhone(String number) {
-        driver.findElement(phoneField).sendKeys(number);
-        driver.findElement(phoneField).click();
+        $(phoneField).setValue(number);
+        $(phoneField).click();
         return this;
     }
 
     public  RegistrationPage typeEmail(String email) {
-        driver.findElement(emailField).sendKeys(email);
+        $(emailField).setValue(email);
         return this;
     }
 
     public  RegistrationPage typePass1(String pass) {
-        driver.findElement(password1Field).sendKeys(pass);
+        $(password1Field).setValue(pass);
         return this;
     }
 
     public RegistrationPage typePass2(String pass) {
-        driver.findElement(password2Field).sendKeys(pass);
+        $(password2Field).setValue(pass);
         return this;
     }
 
     public  RegistrationPage register() {
-        driver.findElement(registerButton).click();
+        $(registerButton).click();
         return this;
     }
 
-    public String getErrorEmail() {
-        String error = driver.findElement(emailError).getText();
+    public SelenideElement getErrorEmail() {
+        SelenideElement error = $(emailError);
         return error;
     }
 
-    public String getPhoneError() {
-        String error = driver.findElement(errorPhone).getText();
+    public SelenideElement getPhoneError() {
+        SelenideElement error = $(errorPhone);
         return error;
     }
 
-    public String getPass1Error() {
-        String error = driver.findElement(password1Error).getText();
+    public SelenideElement getPass1Error() {
+        SelenideElement error = $(password1Error);
         return error;
     }
 
-    public String getPass2Error() {
-        String error = driver.findElement(password2Error).getText();
+    public SelenideElement getPass2Error() {
+        SelenideElement error = $(password2Error);
         return error;
     }
 
-    public String getErrorAlert() {
-        String error = driver.findElement(alertError).getText();
+    public SelenideElement getErrorAlert() {
+
+        SelenideElement error = $(alertError);
         return error;
     }
 
