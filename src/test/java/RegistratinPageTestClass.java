@@ -1,11 +1,22 @@
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+import static io.qameta.allure.Allure.addAttachment;
 
 public class RegistratinPageTestClass {
     private WebDriver driver;
@@ -13,7 +24,7 @@ public class RegistratinPageTestClass {
     SuccessRegistrationPage successRegistrationPage;
 
 
-    @Before
+    @BeforeMethod
     public void setUp() {
         System.setProperty("webdriver.chrome.driver", "C://chromedriver.exe");
         driver = new ChromeDriver();
@@ -23,7 +34,7 @@ public class RegistratinPageTestClass {
         driver.get("http://localhost/cscart/profiles-add/");
     }
 
-    @Test
+    @Test(priority = 0)
     public void validRegisterTest() {
         registrationPage = new RegistrationPage(driver);
         successRegistrationPage = new SuccessRegistrationPage(driver);
@@ -38,7 +49,7 @@ public class RegistratinPageTestClass {
         Assert.assertTrue(successRegistrationPage.getH1().contains("Вы успешно зарегистрированы"));
     }
 
-    @Test
+    @Test(priority = 1)
     public void existUserRegisterTest() {
         registrationPage = new RegistrationPage(driver);
         successRegistrationPage = new SuccessRegistrationPage(driver);
@@ -54,7 +65,7 @@ public class RegistratinPageTestClass {
 
     }
 
-    @Test
+    @Test(priority = 1)
     public void emptyFieldsTest() {
         registrationPage = new RegistrationPage(driver);
         successRegistrationPage = new SuccessRegistrationPage(driver);
@@ -72,7 +83,7 @@ public class RegistratinPageTestClass {
 
     }
 
-    @Test
+    @Test(priority = 1)
     public void incorrectPasswordTest() {
         registrationPage = new RegistrationPage(driver);
         successRegistrationPage = new SuccessRegistrationPage(driver);
@@ -89,7 +100,7 @@ public class RegistratinPageTestClass {
 
     }
 
-    @Test
+    @Test(priority = 1)
     public void minPasswordTest() {
         registrationPage = new RegistrationPage(driver);
         successRegistrationPage = new SuccessRegistrationPage(driver);
@@ -105,7 +116,7 @@ public class RegistratinPageTestClass {
 
     }
 
-    @Test
+    @Test(priority = 1)
     public void incorrectEmailTest() {
         registrationPage = new RegistrationPage(driver);
         successRegistrationPage = new SuccessRegistrationPage(driver);
@@ -127,6 +138,27 @@ public class RegistratinPageTestClass {
                 .typePass2("12345")
                 .register();
         Assert.assertTrue(registrationPage.getErrorEmail().contains("Email в поле E-mail неверен."));
+    }
+
+    @AfterMethod
+    public void takeScreenshot(ITestResult result) {
+        if (! result.isSuccess()) {
+            File screen = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            Date date = new Date();
+            SimpleDateFormat format = new SimpleDateFormat("hh_mm_ss");
+            String name = format.format(date)+".png";
+
+            try {
+                FileUtils.copyFile(screen,new File("C:/Screen"+name));
+                addAttachment("Screenshot", FileUtils.openInputStream(screen));
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        driver.quit();
     }
 
     }
