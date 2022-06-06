@@ -41,7 +41,7 @@ public class RegistratinPageTestClass {
         registrationPage
                 .typeName("Test")
                 .typeSurname("Test")
-                .typeEmail("Test1@test.ru")
+                .typeEmail("Tes32t1@test.ru")
                 .typePhone("")
                 .typePass1("12345")
                 .typePass2("12345")
@@ -132,7 +132,7 @@ public class RegistratinPageTestClass {
         registrationPage
                 .typeName("")
                 .typeSurname("")
-                .typeEmail("pass@test")
+                .typeEmail("pass@t223est")
                 .typePhone("")
                 .typePass1("12345")
                 .typePass2("12345")
@@ -149,7 +149,7 @@ public class RegistratinPageTestClass {
             String name = format.format(date)+".png";
 
             try {
-                FileUtils.copyFile(screen,new File("C:/Screen"+name));
+                FileUtils.copyFile(screen,new File("./Screenshots/"+name));
                 addAttachment("Screenshot", FileUtils.openInputStream(screen));
 
             } catch (IOException e) {

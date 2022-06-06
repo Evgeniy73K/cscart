@@ -1,13 +1,25 @@
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+import static io.qameta.allure.Allure.addAttachment;
 
 public class BuyProductsTestClass {
     private WebDriver driver;
@@ -28,7 +40,7 @@ public class BuyProductsTestClass {
     }
 
     @Test
-    public void buyProductAsUserTest() {
+    public void buyProductAsUserTest() throws InterruptedException {
         loginPage = new LoginPage(driver);
         searchPage = new SearchPage(driver);
         productPage = new ProductPage(driver);
@@ -44,24 +56,44 @@ public class BuyProductsTestClass {
         productPage.addToCart();
         wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@id=\"ajax_loading_box\"]"))));
         productPage.goToCheckout();
-        wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@id=\"ajax_loading_box\"]"))));
         checkoutPage.manageDelivery();
+        Thread.sleep(5000);
         wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@id=\"ajax_loading_box\"]"))));
+        Thread.sleep(5000);
         checkoutPage.managePayment();
         wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@id=\"ajax_loading_box\"]"))));
-        checkoutPage.typeAdres("Test");
+        Thread.sleep(5000);
         wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@id=\"ajax_loading_box\"]"))));
         checkoutPage.checkbox();
-        wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@id=\"ajax_loading_box\"]"))));
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         checkoutPage.getOrder();
+        wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@id=\"ajax_loading_box\"]"))));
+        wait.until(ExpectedConditions.invisibilityOf(driver.findElement(By.xpath("//div[@id=\"ajax_loading_box\"]"))));
+        Assert.assertTrue(driver.getCurrentUrl().contains("checkout.complete"));
 
 
 
     }
+
+    @AfterMethod
+    public void takeScreenshot(ITestResult result) {
+        if (! result.isSuccess()) {
+            File screen = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            Date date = new Date();
+            SimpleDateFormat format = new SimpleDateFormat("hh_mm_ss");
+            String name = format.format(date)+".png";
+
+            try {
+                FileUtils.copyFile(screen,new File("./Screenshots/"+name));
+                addAttachment("Screenshot", FileUtils.openInputStream(screen));
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        driver.quit();
+    }
+
 
 }

@@ -3,7 +3,6 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
@@ -13,15 +12,17 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static io.qameta.allure.Allure.addAttachment;
 
-public class LoginPageTestClass {
+public class CatalogTestClass {
     private WebDriver driver;
-    LoginPage loginPage;
+    private MainPage mainPage;
+    private SearchPage searchPage;
+    private CatalogPage catalogPage;
 
     @BeforeMethod
     public void setUp() {
@@ -30,43 +31,42 @@ public class LoginPageTestClass {
         driver.manage().window().maximize();
         WebDriver.Timeouts timeouts = driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         timeouts.implicitlyWait(10, TimeUnit.SECONDS);
-        driver.get("http://localhost/cscart/login/");
-        loginPage = new LoginPage(driver);
-    }
-
-    @Test(priority = 0)
-    public void validLogin() {
-        MainPage mainPage;
+        driver.get("http://localhost/cscart/");
         mainPage = new MainPage(driver);
+        searchPage = new SearchPage(driver);
+    }
 
-        loginPage
-                .typeEmail("test@test.ru")
-                .typePass("12345")
-                .login();
-
-        Assert.assertTrue(mainPage.checkLogin());
+    @Test
+    public void perToPageTest() {
+        mainPage.search("");
+        for(int i = 96; i >= 12; i = i/2) {
+            Assert.assertTrue(searchPage.paginationStepCheck(i));
+        }
 
     }
 
-    @Test(priority = 1)
-    public void invalidLogin() {
-        loginPage
-                .typeEmail("net@test.ru")
-                .typePass("12345")
-                .login();
-
-        Assert.assertTrue(loginPage.getErrorAlert());
-
+    @Test
+    public void sortPriceByDescTest(){
+        catalogPage = new CatalogPage(driver);
+        driver.navigate().to("http://localhost/cscart/elektronika/kompyutery/");
+        catalogPage.sortPriceByDesc();
+        Assert.assertTrue(catalogPage.getPriceListDesc());
     }
 
-    @Test(priority = 1)
-    public void emptyFields() {
-        loginPage
-                .typeEmail("")
-                .typePass("")
-                .login();
+    @Test
+    public void sortPriceByAscTest(){
+        catalogPage = new CatalogPage(driver);
+        driver.navigate().to("http://localhost/cscart/elektronika/kompyutery/");
+        catalogPage.sortPriceByAsc();
+        Assert.assertTrue(catalogPage.getPriceListAsc());
+    }
 
-        Assert.assertTrue(loginPage.errorEmail() && loginPage.errorPass());
+    @Test
+    public void filterMinPriceTest() throws InterruptedException {
+        catalogPage = new CatalogPage(driver);
+        driver.navigate().to("http://localhost/cscart/elektronika/kompyutery/");
+        Assert.assertTrue(catalogPage.setMinPrice());
+
 
     }
 
@@ -88,6 +88,8 @@ public class LoginPageTestClass {
 
         }
 
-        driver.quit();
+       driver.quit();
     }
+
+
 }
