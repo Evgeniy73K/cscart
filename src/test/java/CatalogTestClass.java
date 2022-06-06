@@ -23,6 +23,8 @@ public class CatalogTestClass {
     private MainPage mainPage;
     private SearchPage searchPage;
     private CatalogPage catalogPage;
+    private ProductPage productPage;
+    private WishPage wishPage;
 
     @BeforeMethod
     public void setUp() {
@@ -70,6 +72,39 @@ public class CatalogTestClass {
 
     }
 
+    @Test
+    public void AddToWishListTest() {
+        searchPage = new SearchPage(driver);
+        productPage = new ProductPage(driver);
+        wishPage = new WishPage(driver);
+        mainPage.search("");
+        searchPage.clickProduct();
+        String value1 = productPage.addToWish();
+        driver.navigate().to("http://localhost/cscart/wishlist/");
+        Assert.assertTrue(value1.contains(wishPage.getName()));
+
+
+
+
+    }
+
+    @Test
+    public void deleteFromWishListTest() {
+        searchPage = new SearchPage(driver);
+        productPage = new ProductPage(driver);
+        wishPage = new WishPage(driver);
+        mainPage.search("");
+        searchPage.clickProduct();
+        String value1 = productPage.addToWish();
+        driver.navigate().to("http://localhost/cscart/wishlist/");
+        Assert.assertTrue(value1.contains(wishPage.getName()));
+        Assert.assertTrue(wishPage.delete());
+
+
+
+
+    }
+
     @AfterMethod
     public void takeScreenshot(ITestResult result) {
         if (! result.isSuccess()) {
@@ -88,7 +123,7 @@ public class CatalogTestClass {
 
         }
 
-       driver.quit();
+       //driver.quit();
     }
 
 
